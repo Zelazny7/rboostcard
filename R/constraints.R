@@ -5,18 +5,20 @@
 blueprint <- function(selections, mono) {
 
   ## sort the selections here
-  sels <- sorted(sapply(selections, sort_value), TRUE)
+  i <- sorted(t(sapply(selections, sort_value)), TRUE)
 
   structure(
-    list(selections=sels, mono=mono),
+    list(selections=selections[i], mono=mono),
     class="blueprint")
 }
 
 constraint <- function(..., name) {
+  sels <- list(...)
+  i <- sorted(t(sapply(sels, sort_value)), TRUE)
   out <- structure(
     list(
       name = name,
-      selections = sorted(sapply(selections, sort_value), TRUE)
+      selections = sels[i]
   ), class = "constraint")
   fit_constraint(out)
 }
@@ -27,38 +29,44 @@ constraint_order <- function(x, desc=FALSE) {
 }
 
 fit_constraint <- function(x) {
-  x$blueprints <- list()
+  blueprints <- list()
 
   intervals <- Filter(function(x) inherits(x, "interval"), x$selections)
 
   # check if any interval constraints
   if (length(intervals) > 0) {
     for (i in seq_along(intervals))
-      x$blueprints[[i]] <- fit_interval(intervals[[i]], x)
+      blueprints <- append(blueprints, fit_interval(intervals[[i]], x))
+      # x$blueprints[[i]] <- fit_interval(intervals[[i]], x)
   } else {
 
     tmp <- list()
     orders <- constraint_order(x)
 
     for (i in seq_along(x$selections)) {
-      sel <- x$selections
+      sel <- x$selections[[i]]
       val <- if (inherits(sel, c("identity", "clamp"))) NULL else orders[[i]]
       tmp[[i]] <- fitted_selection(sel, val)
     }
 
-    x$blueprints[[length(x$blueprints) + 1]] <- blueprint(tmp, NULL)
+
+    #x$blueprints[[length(x$blueprints) + 1]] <- blueprint(tmp, NULL)
+
+    blueprints <- append(blueprints, list(blueprint(tmp, NULL)))
   }
 
+  #x$blueprints <- unlist(x$blueprints, recursive = F)
+  x$blueprints <- blueprints
   return(x)
 }
 
 check_clamp <- function(x, default=NULL) {
   clamp <- Filter(function(x) inherits(x, "clamp"), x$selections)
-  if (len(clamp) > 0) clamp[[1]] else default
+  if (length(clamp) > 0) clamp[[1]] else default
 }
 
 
-fit_interval <- function(interval, constraint) {
+fit_interval <- function(interval, constraint) { # -> List[blueprint]
 
   clamp <- check_clamp(constraint)
 
@@ -77,17 +85,15 @@ fit_interval <- function(interval, constraint) {
 
     ord <- constraint_order(constraint, desc = (mono != 1))
 
-    if (!is.null(clamp)) {
-      interval$ll <- max(ll, clamp$ll)
-      interval$ul <- min(ll, clamp$ul)
-    }
+    ll <- max(interval$ll, if (is.null(clamp)) clamp$ll else -Inf)
+    ul <- min(interval$ul, if (is.null(clamp)) clamp$ul else Inf)
 
     pos <- which(sapply(constraint$selections, `==`, interval))
     i <- ord[[pos]]
 
     vals <- list()
     for (j in ord) {
-      if (is.null(j)) {
+      if (is.null(j)) { # clamp selection
         vals <- .append(vals, NULL)
       } else if (j < i) {
         vals <- .append(vals, ll - 1 - (i - j))
@@ -99,15 +105,17 @@ fit_interval <- function(interval, constraint) {
         }
       }
       else {
-        val <- .append(ul + 1 - (i - j))
+        vals <- .append(vals, ul + 1 - (i - j))
       }
     }
 
-    vals[[pos]] <- list(NULL)
+    vals[pos] <- list(NULL)
 
-    out[[mi]] <- lapply(seq_along(constraint$selections), function(i) {
+    fs <- lapply(seq_along(constraint$selections), function(i) {
       fitted_selection(constraint$selections[[i]], vals[[i]])
     })
+
+    out[[mi]] <- blueprint(fs, mono)
   }
 
   out
@@ -123,14 +131,24 @@ len.constraint <- function(x) length(x$blueprints)
     res <- rep(NA_real_, length(x))
 
     for (sel in bp$selections) {
-
       if (inherits(sel, "clamp")) next
-      else res <- .transform(sel, res, clamp)
-
+      else res <- .transform(sel, x, res, clamp)
     }
+    res
   })
 
   monos <- lapply(constraint$blueprints, function(x) if (is.null(x$mono)) 0 else x$mono)
 
-  list(do.call(rbind, out), monos)
+  list(do.call(cbind, out), monos)
+}
+
+
+
+Constraint.from_list <- function(l, name) {
+  do.call(constraint, c(lapply(l, Selection.from_list), name = name))
+}
+
+Constraints.from_json <- function(json) {
+  decoded <- jsonlite::read_json(json, simplifyVector = F)
+  mapply(Constraint.from_list, decoded, names(decoded), SIMPLIFY = F)
 }

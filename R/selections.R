@@ -14,7 +14,7 @@ identity <- function(order = 0) {
 in_selection.identity <- function(s, x) TRUE
 
 clamp <- function(ll, ul, order = 0) {
-  out <- selection(priority=2, order=NULL, order=order, value=NULL)
+  out <- selection(priority=2, order=NULL, value=NULL)
   out$ll <- ll
   out$ul <- ul
   add_class(out, "clamp")
@@ -24,8 +24,9 @@ in_selection.clamp <- function(s, x) TRUE
 
 interval <- function(ll, ul, order = 0, mono = 0) {
   out <- selection(priority=0)
-  out$ll <- ll
-  out$ul <- ul
+  out$ll <- as.numeric(ll)
+  out$ul <- as.numeric(ul)
+  out$order <- order
   out$mono <- mono
   add_class(out, "interval")
 }
@@ -48,13 +49,15 @@ missing_value <- function(order = 0) {
 in_selection.missing_value <- function(s, x) is.na(x)
 
 fitted_selection <- function(selection, value = NULL) {
-  selection$value <- value
+  selection['value'] <- list(value)
   add_class(selection, "fitted_selection")
 }
 
 .transform.fitted_selection <- function(s, x, result, clamp) {
+  # browser()
+
   if (inherits(s, "interval")) {
-    clipped <- clip(x, s$ll, s$ul)
+    clipped <- clip(x, clamp$ll, clamp$ul)
     f <- in_selection(s, clipped) & is.na(result)
     x[f] <- clipped[f]
   }
@@ -69,12 +72,13 @@ sort_value.selection <- function(s) c(s$priority, s$order, -Inf)
 
 
 `==.selection` <- function(e1, e2) {
-  stopifnot(identical(length(e1), length(e2)))
-  all(sapply(seq_along(e1), function(i) identical(e1[[i]], e2[[i]])))
+  if (!identical(length(e1), length(e2))) FALSE
+  else all(sapply(seq_along(e1), function(i) identical(e1[[i]], e2[[i]])))
 }
 
 
 Selection.from_list <- function(l) {
+  if (is.null(l$order)) l$order <- 0
   with(l, switch(
     type,
     "interval" = interval(ll, ul, order, mono),
@@ -99,11 +103,12 @@ json <- '
 {
   "type" : "interval",
   "ll": 0,
-  "ul": 10,
-  "mono": 0
+  "ul": 20,
+  "mono": 1
 }
 '
 
-Selection.from_list(list(type="interval", ll=0, ul=10))
+# Selection.from_list(list(type="interval", ll=0, ul=10))
 
-Selection.from_json(json)
+# Selection.from_json(json)
+

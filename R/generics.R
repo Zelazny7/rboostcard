@@ -7,3 +7,5 @@ sort_value <- function(x) UseMethod("sort_value")
 .transform <- function(s, x, ...) UseMethod(".transform")
 
 from_json <- function(x) UseMethod("from_json")
+
+fit_tree <- function(data, w, cons, tf, stump, sel, ...) UseMethod("fit_tree")

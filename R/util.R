@@ -57,14 +57,29 @@ get_xgb_features_and_values <- function(xgb) {
   })
 
   ## extract leaf values
-  pat <- "^\\d+:leaf=(-?[0-9]+.[0-9-e]+),"
+  pat <- "^[12]:leaf=(-?[0-9]+.[0-9-e]+),"
   leaves <- regexec(pat, dump, perl=TRUE)
   leaves <- Filter(function(x) length(x) > 0, regmatches(dump, leaves))
   values <- matrix(as.numeric(sapply(leaves, '[[', 2)), ncol = 2, byrow = T,
                   dimnames = list(NULL, c("left","right")))
 
+  # browser()
   ## zip them up
   cbind(do.call(rbind, features), values)
+}
+
+tree_to_bins <- function(tree, sel) {
+  ## take ctree tree@tree as input (list)
+  ## inveral to bound with ll and ul
+  recurse <- function(tree, bounds, res = list()) {
+    if (tree$terminal) return(list(c(bounds, tree$prediction)))
+    else c(res, 
+           recurse(tree$left, c(bounds[[1]], tree$psplit$splitpoint)),
+           recurse(tree$right, c(tree$psplit$splitpoint, bounds[[2]])))
+  }
+  bounds <- if (is.null(sel$ll)) c(-Inf, Inf) else c(sel$ll, sel$ul)
+  res <- recurse(tree, bounds=bounds)
+  do.call(rbind, res)
 }
 
 

@@ -1,6 +1,6 @@
 library(xgboost)
 library(timbr)
-data(titanic, package="onyx")
+# data(titanic, package="onyx")
 
 p <- prep(titanic[-1])
 x <- predict(p, titanic)
@@ -17,13 +17,36 @@ params <- list(
 x_train <- xgb.DMatrix(x, label=titanic$Survived)
 xgb <- xgboost::xgb.train(params, x_train, nrounds = 500)
 
+json <- '{
+"Sepal.Length" : [
+{"type": "missing_value"},
+{"type": "interval", "ll": 0, "ul":10, "mono": -1}
+],
+"Sepal.Width"  : [{"type": "identity"}],
+"Petal.Length" : [{"type": "identity"}],
+"Petal.Width"  : [{"type": "identity"}]
+}'
 
-bst <- new("Boostcard", constraints="config.json")
 
+l <- jsonlite::fromJSON(json, simplifyVector = F)
+constraints <- mapply(Constraint.from_list, l, names(l), SIMPLIFY = F)
 
-split_data <- split_xgb_outputs(xgb, res$ncols)
+bst <- new("Boostcard", constraints=constraints)
+y <- as.integer(iris$Species == "virginica")
+p <- bst$fit(iris[-5], y)
 
+bst$transform(iris[-5])
 
-res <- bst$fit(X=x, y=titanic$Survived)
+res <- bst$fit(X=iris[-5], y=titanic$Survived)
 
 do.call(cbind, res$features)
+
+
+tree <- party::ctree(iris$Petal.Width~iris$Sepal.Length,
+                     controls = party::ctree_control(minbucket = 25))
+
+tree_to_bins(tree@tree, identity())
+
+tree@tree[["children"]]
+
+tree

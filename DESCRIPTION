@@ -15,4 +15,6 @@ Collate:
     'util.R'
     'selections.R'
     'constraints.R'
+    'boostcard.R'
     'hello.R'
+    'stumps.R'

@@ -29,11 +29,14 @@ lengths_to_indices <- function(lens) { # -> List[int]
 }
 
 split_xgb_outputs <- function(xgb, lens) {
-
   m <- get_xgb_features_and_values(xgb)
-
-  lapply(lengths_to_indices(lens), function(ids) m[m[,'feature',drop=F] %in% ids,])
-
+  lapply(lengths_to_indices(lens), function(ids) {
+    # browser()
+    res <- m[m[,'feature',drop=F] %in% ids,,drop=F]
+    ## make the feautres 1-indexed
+    res[,'feature'] <- res[,'feature'] - min(ids) + 1
+    res
+  })
 }
 
 get_xgb_features_and_values <- function(xgb) {
@@ -47,7 +50,7 @@ get_xgb_features_and_values <- function(xgb) {
    [5] "booster[1]"
    [6] "0:[f1<1.5] yes=1,no=2,missing=1,gain=171.319641,cover=175.177063"'
 
-  pat <- "\\[f([0-9]+)<([0-9]+.*[0-9-e]*)\\]"
+  pat <- "\\[f([0-9]+)<(-?[0-9]+.?[0-9-e]*)\\]"
   matches <- regexec(pat, dump, perl=TRUE)
 
   ## extract features and thresholds - 1-indexed features
@@ -73,7 +76,7 @@ tree_to_bins <- function(tree, sel) {
   ## inveral to bound with ll and ul
   recurse <- function(tree, bounds, res = list()) {
     if (tree$terminal) return(list(c(bounds, tree$prediction)))
-    else c(res, 
+    else c(res,
            recurse(tree$left, c(bounds[[1]], tree$psplit$splitpoint)),
            recurse(tree$right, c(tree$psplit$splitpoint, bounds[[2]])))
   }

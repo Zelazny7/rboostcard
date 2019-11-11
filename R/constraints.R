@@ -13,8 +13,9 @@ blueprint <- function(selections, mono) {
 }
 
 constraint <- function(..., name) {
+  # browser()
   sels <- list(...)
-  i <- sorted(t(sapply(sels, sort_value)), TRUE)
+  i <- sorted(t(vapply(sels, sort_value, FUN.VALUE = numeric(3))), TRUE)
   out <- structure(
     list(
       name = name,
@@ -125,6 +126,7 @@ fit_interval <- function(interval, constraint) { # -> List[blueprint]
 len.constraint <- function(x) length(x$blueprints)
 
 .transform.constraint <- function(constraint, x) {
+  x <- as.numeric(x)
   clamp <- check_clamp(constraint, default=clamp(-Inf, Inf))
 
   out <- lapply(constraint$blueprints, function(bp) {

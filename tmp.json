@@ -1,0 +1,282 @@
+{
+  "criminalnonfelonycount": [
+    {
+      "type": "missing_value",
+      "order": 0
+    },
+    {
+      "type": "override",
+      "override": -1,
+      "order": 0
+    },
+    {
+      "type": "interval",
+      "ll": -1, "ul": 99,
+      "order": 0,
+      "mono": 1
+    }
+    ],
+  "addronfilecount": [
+    {
+      "type": "missing_value",
+      "order": 0
+    },
+    {
+      "type": "override",
+      "override": -1,
+      "order": 0
+    },
+    {
+      "type": "interval",
+      "ll": -1, "ul": 99,
+      "order": 0,
+      "mono": 1
+    }
+    ],
+  "evictiontimenewest": [
+    {
+      "type": "missing_value",
+      "order": 0
+    },
+    {
+      "type": "override",
+      "override": -1,
+      "order": 0
+    },
+    {
+      "type": "interval",
+      "ll": -1, "ul": 99,
+      "order": 0,
+      "mono": -1
+    }
+    ],
+  "addrcurrentownershipindex": [
+    {
+      "type": "missing_value",
+      "order": 0
+    },
+    {
+      "type": "override",
+      "override": -1,
+      "order": 0
+    },
+    {
+      "type": "interval",
+      "ll": -1, "ul": 99,
+      "order": 0,
+      "mono": -1
+    }
+    ],
+  "addrprevioustimeoldest": [
+    {
+      "type": "missing_value",
+      "order": 0
+    },
+    {
+      "type": "override",
+      "override": -1,
+      "order": 0
+    },
+    {
+      "type": "interval",
+      "ll": -1, "ul": 999,
+      "order": 0,
+      "mono": -1
+    }
+    ],
+  "assetpropevercount": [
+    {
+      "type": "missing_value",
+      "order": 0
+    },
+    {
+      "type": "override",
+      "override": -1,
+      "order": 0
+    },
+    {
+      "type": "interval",
+      "ll": -1, "ul": 6,
+      "order": 0,
+      "mono": -1
+    }
+    ],
+  "ca_eviction_index": [
+    {
+      "type": "missing_value",
+      "order": 0
+    },
+    {
+      "type": "interval",
+      "ll": -1, "ul": 2,
+      "order": 0,
+      "mono": 1
+    }
+    ],
+  "ca_inquiry_industry_count": [
+    {
+      "type": "missing_value",
+      "order": 0
+    },
+    {
+      "type": "override",
+      "override": -1,
+      "order": 0
+    },
+    {
+      "type": "interval",
+      "ll": -2, "ul": 4,
+      "order": 0,
+      "mono": 1
+    }
+    ],
+  "addrcurrentavmratio12monthprior": [
+    {
+      "type": "missing_value",
+      "order": 0
+    },
+    {
+      "type": "override",
+      "override": -1,
+      "order": 0
+    },
+    {
+      "type": "interval",
+      "ll": -1, "ul": 99,
+      "order": 0,
+      "mono": -1
+    }
+    ],
+  "bestaddravmvalue": [
+    {
+      "type": "missing_value",
+      "order": 0
+    },
+    {
+      "type": "override",
+      "override": -1,
+      "order": 0
+    },
+    {
+      "type": "clamp",
+      "ll": 0,
+      "ul": 150000
+    },
+    {
+      "type": "interval",
+      "ll": -1, "ul": 150000,
+      "order": 0,
+      "mono": -1
+    }
+    ],
+  "ca_addr_recency": [
+    {
+      "type": "missing_value",
+      "order": 0
+    },
+    {
+      "type": "override",
+      "override": -1,
+      "order": 0
+    },
+    {
+      "type": "interval",
+      "ll": -1, "ul": 999,
+      "order": 0,
+      "mono": 1
+    }
+    ],
+  "sourcenonderogcount12month": [
+    {
+      "type": "missing_value",
+      "order": 0
+    },
+    {
+      "type": "override",
+      "override": -1,
+      "order": -1
+    },
+    {
+      "type": "interval",
+      "ll": -1, "ul": 1,
+      "order": 0,
+      "mono": 1
+    },
+    {
+      "type": "interval",
+      "ll": 1, "ul": 999,
+      "order": 0,
+      "mono": -1
+    }
+    ],
+  "lienjudgmentcourtcount": [
+    {
+      "type": "missing_value",
+      "order": 0
+    },
+    {
+      "type": "override",
+      "override": -1,
+      "order": 0
+    },
+    {
+      "type": "interval",
+      "ll": -1, "ul": 999,
+      "order": 0,
+      "mono": 1
+    }
+    ],
+  "criminalfelonycount": [
+    {
+      "type": "missing_value",
+      "order": 0
+    },
+    {
+      "type": "override",
+      "override": -1,
+      "order": 0
+    },
+    {
+      "type": "interval",
+      "ll": -1, "ul": 999,
+      "order": 0,
+      "mono": 1
+    }
+    ],
+  "addrinputlengthofres": [
+    {
+      "type": "missing_value",
+      "order": 0
+    },
+    {
+      "type": "override",
+      "override": -1,
+      "order": 0
+    },
+    {
+      "type": "interval",
+      "ll": -1,
+      "ul": 1000,
+      "order": 0,
+      "mono": -1
+    }
+    ],
+  "educationattendance": [
+    {
+      "type": "missing_value",
+      "order": 0
+    },
+    {
+      "type": "override",
+      "override": -1,
+      "order": 0
+    },
+    {
+      "type": "interval",
+      "ll": -1,
+      "ul": 1,
+      "order": 0,
+      "mono": -1
+    }
+    ]
+}

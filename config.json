@@ -1,0 +1,29 @@
+{
+  "Age": [
+    {"type": "missing_value", "order": 0},
+    {"type": "interval", "ll": 0, "ul": 100, "order": 0, "mono": -1}
+  ],
+  "Fare": [
+      {"type": "interval", "ll": 0, "ul": 1000, "order": 0, "mono": 1}
+  ],
+  "Sex": [
+    {
+      "type": "identity"
+    }
+  ],
+  "SibSp": [
+    {
+      "type": "identity"
+    }
+  ],
+  "Pclass": [
+    {
+      "type": "identity"
+    }
+  ],
+  "Parch": [
+    {
+      "type": "identity"
+    }
+  ]
+}

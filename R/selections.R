@@ -14,7 +14,7 @@ identity <- function(order = 0) {
 in_selection.identity <- function(s, x) TRUE
 
 clamp <- function(ll, ul, order = 0) {
-  out <- selection(priority=2, order=NULL, value=NULL)
+  out <- selection(priority=2, order=-Inf, value=NULL)
   out$ll <- ll
   out$ul <- ul
   add_class(out, "clamp")
@@ -40,7 +40,7 @@ override <- function(override, order = 0) {
   add_class(out, "override")
 }
 
-in_selection.override <- function(s, x) (x == s$override) & !is.na(x)
+in_selection.override <- function(s, x) (as.numeric(x) == s$override) & !is.na(x)
 
 missing_value <- function(order = 0) {
   add_class(selection(priority=1, order=order), "missing_value")
@@ -54,7 +54,6 @@ fitted_selection <- function(selection, value = NULL) {
 }
 
 .transform.fitted_selection <- function(s, x, result, clamp) {
-  # browser()
 
   if (inherits(s, "interval")) {
     clipped <- clip(x, clamp$ll, clamp$ul)

@@ -11,6 +11,7 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
 Collate: 
+    'bin.R'
     'generics.R'
     'util.R'
     'selections.R'

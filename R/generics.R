@@ -9,3 +9,5 @@ sort_value <- function(x) UseMethod("sort_value")
 from_json <- function(x) UseMethod("from_json")
 
 fit_tree <- function(data, w, cons, tf, stump, sel, ...) UseMethod("fit_tree")
+
+update_bin_weights <- function(obj, coef) UseMethod("update_bin_weights")

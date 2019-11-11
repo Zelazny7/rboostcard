@@ -1,6 +1,6 @@
 library(xgboost)
 library(timbr)
-# data(titanic, package="onyx")
+data(titanic, package="onyx")
 
 p <- prep(titanic[-1])
 x <- predict(p, titanic)
@@ -31,9 +31,42 @@ json <- '{
 l <- jsonlite::fromJSON(json, simplifyVector = F)
 constraints <- mapply(Constraint.from_list, l, names(l), SIMPLIFY = F)
 
-bst <- new("Boostcard", constraints=constraints)
 y <- as.integer(iris$Species == "virginica")
-p <- bst$fit(iris[-5], y)
+bst <- new("Boostcard", constraints="config.json", min_child_weight=25L, max_depth=4L)
+d <- sample(nrow(titanic), nrow(titanic)*0.66)
+v <- setdiff(seq(nrow(titanic)), d)
+
+bst$fit(titanic[d,-1], titanic$Survived[d])
+
+p <- bst$predict(titanic)
+
+# library(ks)
+# ksd <- data.frame(score=-p, y=titanic$Survived, sample=ifelse(seq(nrow(titanic)) %in% d, "dev", "val"))
+# kst <- ks_table(y~score|sample, data = ksd, number_bins = 20)
+
+library(onyx)
+
+mod <- bin(titanic[d,-1], titanic$Survived[d], mono=2)
+mod$set_step(lvl=1)
+mod$fit()
+
+val <- mod$predict(titanic[-1])
+
+ksd <- data.frame(onyx=val, score=p, y=titanic$Survived, sample=ifelse(seq(nrow(titanic)) %in% d, "dev", "val"))
+kst <- ks_table(y~score+onyx|sample, data = ksd, number_bins = 20)
+
+bst$bins$Age
+
+
+bst <- new("Boostcard")
+
+
+f <- sapply(titanic, is.factor)
+titanic[f] <- lapply(titanic[f], as.numeric)
+
+bst$fit(titanic[-1], titanic$Survived)
+
+p <- bst$predict(iris)
 
 bst$transform(iris[-5])
 
@@ -50,3 +83,15 @@ tree_to_bins(tree@tree, identity())
 tree@tree[["children"]]
 
 tree
+
+
+## tests for constraints ....
+
+c1 <- constraint(
+  clamp(2, 5),
+  interval(1.9, 5),
+  missing_value(), name="v1")
+
+.transform(c1, c(NA, 1:10))
+
+## this shit is pissing me off...!

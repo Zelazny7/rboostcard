@@ -1,6 +1,7 @@
 #' @include generics.R
 
 stump <- function(feature_data) {
+  # browser()
   # Feature is a matrix that looks like this
   #
   #      feature threshold       left        right
@@ -11,11 +12,15 @@ stump <- function(feature_data) {
 }
 
 .transform.stump <- function(stump, x, ...) {
-  # browser()
+
+  # X should be the transformed chunk of data just for this column
+
   res <- numeric(NROW(x))
+  if (NROW(stump) == 0) return(res)
   for (i in seq.int(nrow(stump))) {
     vec <- stump[i,]
-    res <- res + ifelse(x[,vec['feature']] < vec['threshold'], vec['left'], vec['right'])
+    idx <- stump[[i,1]]
+    res <- res + ifelse(x[,idx] < vec['threshold'], vec['left'], vec['right'])
   }
   res
 }

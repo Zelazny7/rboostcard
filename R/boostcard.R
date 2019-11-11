@@ -1,4 +1,5 @@
 #' @include constraints.R
+#' @include bin.R
 
 setClassUnion("ListOrCharacter", members = c("list", "character"))
 
@@ -85,10 +86,7 @@ Boostcard <- setRefClass(
         res <- lapply(cons$selections, fit_tree, cons, X, w, tf, stumps[[i]], .self$min_child_weight)
         
         ## TODO: create a bin class and dump these there
-        f <- sapply(res, inherits, "interval_level")
-        intervals <- do.call(rbind, res[f])
-        i <- sorted(intervals)
-        .self$bins[[cons$name]] <- rbind(do.call(rbind, res[!f]), intervals[i,,drop=F])
+        .self$bins[[cons$name]] <- binned_variable(res)
       }
     },
     transform = function(X) {
